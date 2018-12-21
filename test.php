@@ -1,16 +1,26 @@
 <?php
     require_once('PasswordGenerator.php');
+
     echo "Sample Passwords:\n\n";
-    $ascii = PasswordGenerator::getASCIIPassword(64);
-    $hex = PasswordGenerator::getHexPassword(64);
-    $alpha = PasswordGenerator::getAlphaNumericPassword(64);
-    $custom = PasswordGenerator::getCustomPassword(array('a', 'b'), 64);
-    echo $ascii, "\n", $hex, "\n", $alpha, "\n", $custom, "\n\n";
 
     function failTest($msg)
     {
         echo "FAILED: $msg\n";
         exit(1);
+    }
+
+    try
+    {
+        $ascii = PasswordGenerator::getASCIIPassword(64);
+        $hex = PasswordGenerator::getHexPassword(64);
+        $alpha = PasswordGenerator::getAlphaNumericPassword(64);
+        $custom = PasswordGenerator::getCustomPassword(array('a', 'b'), 64);
+
+        echo $ascii, "\n", $hex, "\n", $alpha, "\n", $custom, "\n\n";
+    }
+    catch (\Exception $e)
+    {
+        failTest($e->getMessage());
     }
 
     $last = array();
@@ -19,10 +29,17 @@
     $hex_chars = array();
     $custom_chars = array();
     for ($i = 0; $i < 20; $i++) {
-        $ascii = PasswordGenerator::getASCIIPassword(64);
-        $alpha = PasswordGenerator::getAlphaNumericPassword(64);
-        $hex = PasswordGenerator::getHexPassword(64);
-        $custom = PasswordGenerator::getCustomPassword(array('a', 'b'), 64);
+        try
+        {
+            $ascii = PasswordGenerator::getASCIIPassword(64);
+            $alpha = PasswordGenerator::getAlphaNumericPassword(64);
+            $hex = PasswordGenerator::getHexPassword(64);
+            $custom = PasswordGenerator::getCustomPassword(array('a', 'b'), 64);
+        }
+        catch (\Exception $e)
+        {
+            failTest($e->getMessage());
+        }
 
         if (in_array($ascii, $last)) {
             failTest("Duplicate ASCII password.");
@@ -88,19 +105,34 @@
         failTest("Not all Custom chars are included.");
     }
 
-    if (PasswordGenerator::getCustomPassword("abc", 64) !== false) {
-        failTest("Improper usage does not return false.");
+    try
+    {
+        PasswordGenerator::getCustomPassword(str_split("abc"), 0);
+        failTest("Improper usage (length) didn't throw an exception .");
     }
+    catch (\Exception $e) {}
+
+    try
+    {
+        PasswordGenerator::getCustomPassword([], 64);
+        failTest("Improper usage (character set) didn't throw an exception .");
+    }
+    catch (\Exception $e) {}
 
     for ($i = 0; $i < 1000; $i++) {
-        $ints = PasswordGenerator::getRandomInts($i);
-        $count = count($ints);
-        if ($count != $i) {
-            failTest("$i random ints is $count and not $i");
+        try
+        {
+            $ints = PasswordGenerator::getRandomInts($i);
+            $count = count($ints);
+
+            if ($count != $i) {
+                failTest("$i random ints is $count and not $i");
+            }
+        }
+        catch (\Exception $e)
+        {
+            failTest($e->getMessage());
         }
     }
 
     echo "ALL TESTS PASS!\n";
-    exit(0);
-
-?>
