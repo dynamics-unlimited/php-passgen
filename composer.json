@@ -1,19 +1,19 @@
 {
-    "name": "defuse/php-passgen",
-    "description": "PHP Random Password Generator Library",
+    "name": "dynamics-unlimited/php-passgen",
+    "description": "(forked from defuse/php-passgen) PHP Random Password Generator Library",
     "license": "MIT",
     "keywords": ["security", "passwords", "random", "generate"],
     "authors": [
         {
-            "name": "Taylor Hornby",
-            "email": "havoc@defuse.ca"
+            "name": "Nicolas GIROD"
         }
     ],
     "autoload": {
         "classmap": ["PasswordGenerator.php"]
     },
     "require": {
-        "php":  ">=5.3.0",
-        "ext-mcrypt":  "*"
+        "php":  ">=5.6.0",
+        "ext-mcrypt":  "*",
+        "ext-mbstring": "*"
     }
 }
